@@ -39,6 +39,7 @@ app.get("/feed",async(req,res)=>{
         res.status(500).send("There is an Error: " + err.message);
     }
 })
+//this is to post the data to the DB
 app.post("/signup", async (req, res) => {
     console.log("Request", req.body);
 
@@ -51,7 +52,37 @@ app.post("/signup", async (req, res) => {
         res.status(400).send("There is an Error: " + err.message);
     }
 });
-
+//this is to delete the data from the DB
+app.delete("/user", async (req, res) => {
+    const userId=req.body.userId;
+    try {
+        //const user = await User.findByIdAndDelete({userId });
+        const user = await User.findByIdAndDelete({ "_id": userId });
+        if (!user) {
+            res.status(404).send("User not found");
+            return;
+        }
+        res.send("User has been deleted successfully");
+    } catch (err) {
+        res.status(500).send("There is an Error: " + err.message);
+    }
+});
+app.patch("/user", async (req, res) => {
+    const userId=req.body.userId;
+    const updateData=req.body;
+    try {
+        const user = await User.findByIdAndUpdate({ "_id": userId }, updateData,{returnDocument: 'after' });
+        console.log("Updated User",user);
+        if (!user) {
+            res.status(404).send("User not found");
+            return;
+        }else{
+            res.send("User has been updated successfully");
+        }
+    } catch (err) {
+        res.status(500).send("There is an Error: " + err.message);
+    }
+});
 connectDB()
     .then(() => {
         console.log("The Database connection has been successful");
