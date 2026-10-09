@@ -71,8 +71,18 @@ app.patch("/user", async (req, res) => {
     const userId=req.body.userId;
     const updateData=req.body;
     try {
+        const ALLOWED_UPDATES=["userId","age","gender","photoUrl","about","skills"];
+        // Filter the updateData to only include allowed updates
+        const isUpdateAllowed = Object.keys(updateData).every((key) => ALLOWED_UPDATES.includes(key));
+        if (!isUpdateAllowed) {
+            res.status(400).send("Invalid updates. Only age, gender, photoUrl, about, and skills can be updated.");
+            return;
+        }
+        // if(updateData.skills.length>10){
+        //     throw new Error("You can add a maximum of 10 skills.");
+        // }
         const user = await User.findByIdAndUpdate({ "_id": userId }, updateData,{returnDocument: 'after', runValidators:true});
-        console.log("Updated User",user);
+        // console.log("Updated User",user);
         if (!user) {
             res.status(404).send("User not found");
             return;

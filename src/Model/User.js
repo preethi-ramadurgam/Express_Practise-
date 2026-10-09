@@ -42,7 +42,12 @@ const userSchema = new mongoose.Schema({
     },
     skills:{
         type:[String],
+        validate(value) {
+            if (value.length > 5) {
+                throw new Error("You can add a maximum of 5 skills.");
+            }
+        }
     }
-},{timestamps:true});
+}, { timestamps: true });
 const User=mongoose.model("User",userSchema);
 module.exports=User;
