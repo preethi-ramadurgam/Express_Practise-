@@ -67,11 +67,11 @@ app.delete("/user", async (req, res) => {
         res.status(500).send("There is an Error: " + err.message);
     }
 });
-app.patch("/user", async (req, res) => {
-    const userId=req.body.userId;
+app.patch("/user/:userId", async (req, res) => {
+    const userId=req.params?.userId;
     const updateData=req.body;
     try {
-        const ALLOWED_UPDATES=["userId","age","gender","photoUrl","about","skills"];
+        const ALLOWED_UPDATES=["age","gender","photoUrl","about","skills"];
         // Filter the updateData to only include allowed updates
         const isUpdateAllowed = Object.keys(updateData).every((key) => ALLOWED_UPDATES.includes(key));
         if (!isUpdateAllowed) {
