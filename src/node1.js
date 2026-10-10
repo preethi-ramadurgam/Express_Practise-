@@ -64,6 +64,23 @@ app.post("/signup", async (req, res) => {
         res.status(400).send("There is an Error: " + err.message);
     }
 });
+//this is to login the user 
+app.post("/login",async(req,res)=>{
+    try{
+        const {emailId,password}=req.body;
+        const user=await User.findOne({emailId});   
+        if(!user){
+            throw new Error("Email not found");
+        }
+        const isPasswordMatch=await bcrypt.compare(password,user.password);
+        if(!isPasswordMatch){
+            throw new Error("Invalid Password");
+        }
+        res.send("Login successful");
+    }catch(err){
+        res.status(500).send("There is an Error: " + err.message);
+    }
+})
 //this is to delete the data from the DB
 app.delete("/user", async (req, res) => {
     const userId=req.body.userId;
