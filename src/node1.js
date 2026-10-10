@@ -2,6 +2,9 @@ const express = require("express");
 const connectDB = require("./config/Database");
 const User = require("./Model/User");
 const app = express();
+const { validateSignUpData } = require("./utils/Validation");
+const bcrypt = require("bcrypt");
+
 // To convert json data to js object 
 app.use(express.json());
 //find a User with this emailId in DB
@@ -41,11 +44,20 @@ app.get("/feed",async(req,res)=>{
 })
 //this is to post the data to the DB
 app.post("/signup", async (req, res) => {
-    console.log("Request", req.body);
-
-    const user = new User(req.body);
-
     try {
+        //Step 1: Validation of Data  
+        const validation = validateSignUpData(req);
+        //Step 2: Hash the password
+        const {firstName,lastName,emailId,password}=req.body;
+        const passwordHashed = await bcrypt.hash(password, 10);
+        console.log("Password Hashed", passwordHashed);
+        console.log("Request", req.body);
+        const user = new User({
+            firstName,
+            lastName,
+            emailId,
+            password:passwordHashed,
+        });
         await user.save();
         res.send("User has been added successfully");
     } catch (err) {
